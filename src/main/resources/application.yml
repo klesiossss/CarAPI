@@ -1,0 +1,44 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema:
+  flyway:
+    enabled: false
+    schemas: CadastroColaboradores
+    validate-on-migrate: false
+    baseline-on-migrate: false
+    baseline-version: 0
+    table: vagas_schema_history
+
+  profiles:
+    active: dev
+
+---
+
+spring:
+  profiles: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 12345
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+---
+
+spring:
+  profiles: prod
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 12345
+
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
