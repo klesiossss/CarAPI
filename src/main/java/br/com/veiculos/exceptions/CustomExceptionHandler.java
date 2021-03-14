@@ -57,6 +57,18 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, exception, new HttpHeaders(), exception.getStatusCode(), request);
     }
 
+    @ExceptionHandler({ HttpServerErrorException.class })
+    public ResponseEntity<Object> handleDuplicatedEntityException(HttpServerErrorException ex, WebRequest request) {
+        var exception = new ExceptionMessage(ex.getMessage(), HttpStatus.NOT_FOUND, null);
+        return handleExceptionInternal(ex, exception, new HttpHeaders(), exception.getStatusCode(), request);
+    }
+
+    @ExceptionHandler({ IllegalStateException.class })
+    public ResponseEntity<Object> handleDuplicatedEntityException(IllegalStateException ex, WebRequest request) {
+        var exception = new ExceptionMessage(ex.getMessage(), HttpStatus.NOT_FOUND, null);
+        return handleExceptionInternal(ex, exception, new HttpHeaders(), exception.getStatusCode(), request);
+    }
+
     @ExceptionHandler({ Exception.class })
     public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
         var exception = new ExceptionMessage(ex.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);

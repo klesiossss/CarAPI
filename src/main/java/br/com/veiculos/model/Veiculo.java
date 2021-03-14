@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Getter @Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Veiculo extends EntityBase implements Serializable {
@@ -20,10 +20,7 @@ public class Veiculo extends EntityBase implements Serializable {
     private Double preco;
     private Date dataCadastro;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.MERGE})
     private Modelo modelo;
-
-
-
 
 }

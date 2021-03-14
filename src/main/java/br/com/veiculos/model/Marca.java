@@ -7,7 +7,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Getter @Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Marca extends EntityBase implements Serializable {

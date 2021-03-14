@@ -1,10 +1,7 @@
 package br.com.veiculos.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import javax.persistence.Column;
@@ -21,7 +18,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Getter @Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Modelo extends EntityBase implements Serializable {
@@ -30,7 +27,7 @@ public class Modelo extends EntityBase implements Serializable {
     private String name;
     private Long fipeId;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.MERGE})
     private Marca marca;
 
 }
