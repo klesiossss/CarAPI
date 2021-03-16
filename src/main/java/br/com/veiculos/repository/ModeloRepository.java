@@ -3,9 +3,9 @@ package br.com.veiculos.repository;
 import br.com.veiculos.model.Modelo;
 import org.dom4j.rule.Mode;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
+@Repository
 public interface ModeloRepository extends JpaRepository<Modelo,Long> {
     Modelo findByFipeId(Long fipeId);
 }

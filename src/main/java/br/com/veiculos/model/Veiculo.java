@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -18,9 +19,9 @@ public class Veiculo extends EntityBase implements Serializable {
     private Double precoAnuncio;
     private Long ano;
     private Double preco;
-    private Date dataCadastro;
+    private LocalDate dataCadastro;
 
-    @ManyToOne(cascade = {CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.ALL})
     private Modelo modelo;
 
 }

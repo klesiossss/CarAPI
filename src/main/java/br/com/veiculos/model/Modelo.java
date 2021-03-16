@@ -27,7 +27,7 @@ public class Modelo extends EntityBase implements Serializable {
     private String name;
     private Long fipeId;
 
-    @ManyToOne(cascade = {CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.ALL})
     private Marca marca;
 
 }

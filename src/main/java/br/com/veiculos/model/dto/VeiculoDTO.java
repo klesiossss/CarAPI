@@ -6,27 +6,28 @@ import br.com.veiculos.model.Veiculo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class VeiculoDTO {
-
+    private Long id;
     private String placa;
     private Double precoAnuncio;
     private Long ano;
     private String preco;
-    private Date dataCadastro;
+    private LocalDate dataCadastro;
     private String modelo;
     private String marca;
-    @JsonIgnore
+
     private Long marcaId;
-    @JsonIgnore
+
     private Long modeloId;
 
-    public VeiculoDTO(String placa, Double precoAnuncio, Long ano, Double preco, Date dataCadastro,
+    public VeiculoDTO(String placa, Double precoAnuncio, Long ano, Double preco, LocalDate dataCadastro,
                        String modelo, String marca) {
         this.placa = placa;
         this.precoAnuncio = precoAnuncio;
@@ -46,6 +47,7 @@ public class VeiculoDTO {
     }
 
     public VeiculoDTO(Veiculo veiculo){
+        this.id = veiculo.getId();
         this.placa = veiculo.getPlaca();
         this.precoAnuncio = veiculo.getPrecoAnuncio();
         this.ano = veiculo.getAno();
@@ -55,6 +57,7 @@ public class VeiculoDTO {
         this.marca = veiculo.getModelo().getMarca().getName();
     }
 
+    @JsonIgnore
     public Veiculo getVeiculoWithNewModelAndNewMark() {
         Veiculo v = new Veiculo();
         Modelo d = new Modelo();
@@ -74,6 +77,7 @@ public class VeiculoDTO {
         return v;
     }
 
+    @JsonIgnore
     public Veiculo getVeiculoWithNewModelOnly() {
         Veiculo v = new Veiculo();
         v.setPlaca(this.placa);
@@ -85,10 +89,10 @@ public class VeiculoDTO {
         return v;
     }
 
-
-
+    @JsonIgnore
     public Veiculo getVeiculo() {
         Veiculo v = new Veiculo();
+        v.setId(this.id);
         v.setPlaca(this.placa);
         v.setPrecoAnuncio(this.precoAnuncio);
         v.setAno(this.ano);
@@ -97,18 +101,4 @@ public class VeiculoDTO {
         v.setPreco(Double.parseDouble(st.replace(",","")));
         return v;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

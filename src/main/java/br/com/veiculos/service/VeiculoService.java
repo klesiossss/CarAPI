@@ -11,38 +11,48 @@ import br.com.veiculos.repository.MarcaRepository;
 import br.com.veiculos.repository.ModeloRepository;
 import br.com.veiculos.repository.VeiculoRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
-import java.text.ParseException;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class VeiculoService {
-    @Autowired
-    private VeiculoRepository veiculoRepository;
-    @Autowired
-    private ModeloRepository modeloRepository;
-    @Autowired
-    private MarcaRepository marcaRepository;
+    private final VeiculoRepository veiculoRepository;
+    private final ModeloRepository modeloRepository;
+    private final MarcaRepository marcaRepository;
 
-
-    public List<Veiculo> obterTodos() {
-        var listPessoas = veiculoRepository.findAll();
-        return listPessoas;
+    public VeiculoService(VeiculoRepository veiculoRepository,
+                          ModeloRepository modeloRepository,
+                          MarcaRepository marcaRepository) {
+        this.veiculoRepository = veiculoRepository;
+        this.modeloRepository = modeloRepository;
+        this.marcaRepository = marcaRepository;
     }
 
 
-    public Veiculo obterPorId(Long id) {
+    public List<VeiculoDTO> obterTodos() {
+        var listVeiculos = veiculoRepository.findAll();
+        return listVeiculos.stream().map(VeiculoDTO::new).collect(Collectors.toList());
+    }
+
+    public Page<VeiculoDTO> obterTodos(Pageable pageable) {
+        var listVeiculos = veiculoRepository.findAll(pageable);
+        var veiculos = listVeiculos.getContent().stream()
+                .map(VeiculoDTO::new).collect(Collectors.toList());
+        return new PageImpl(veiculos, pageable, listVeiculos.getTotalElements());
+    }
+
+
+    public VeiculoDTO obterPorId(Long id) {
         var veiculo = veiculoRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
-        return veiculo;
+        return new VeiculoDTO(veiculo);
     }
 
 
@@ -54,15 +64,17 @@ public class VeiculoService {
 
 
     public Page<VeiculoDTO> obterVeiculosPorMarca(String marca, Pageable pageable) {
-        var veiculos = veiculoRepository.findByModeloMarcaName(marca, pageable);
+        var veiculos = veiculoRepository.findByModeloMarcaNameContainingIgnoreCase(marca, pageable);
         var listVeiculos = veiculos.stream().map(VeiculoDTO::new)
-                                        .collect(Collectors.toList());
+                .collect(Collectors.toList());
         return new PageImpl<VeiculoDTO>(listVeiculos, pageable, veiculos.getTotalElements());
     }
 
 
     public VeiculoDTO salva(VeiculoDTO veiculoDTO) {
 
+        System.out.println("salvando...");
+        System.out.println(veiculoDTO);
         FipeAPI fipeAPI = new FipeAPI();
         var fipe = fipeAPI.findFipePrice(veiculoDTO.getMarcaId(), veiculoDTO.getModeloId(),
                 veiculoDTO.getAno()).orElseThrow(() -> new ResourceNotFoundException());
@@ -74,12 +86,14 @@ public class VeiculoService {
             veiculoDTO.setMarca(fipe.getMarca());
             veiculoDTO.setPreco(fipe.getPreco());
             veiculoDTO.setModelo(fipe.getVeiculo());
-            veiculoDTO.setDataCadastro(new Date());
+            veiculoDTO.setDataCadastro(LocalDate.now());
 
             if (model != null) {
                 Veiculo v = veiculoDTO.getVeiculo();
                 v.setModelo(model);
+                v.setCriadoEm(LocalDateTime.now());
                 veiculoRepository.save(v);
+
                 System.out.println("ja tinha modelo");
             } else {
                 if (mark == null) {
@@ -89,14 +103,19 @@ public class VeiculoService {
                     modeloRepository.save(new Modelo(veiculoDTO.getModelo(), veiculoDTO.getModeloId(), marca));
                     var modelo = modeloRepository.findByFipeId(veiculoDTO.getModeloId());
                     v.setModelo(modelo);
+                    v.setCriadoEm(LocalDateTime.now());
                     veiculoRepository.save(v);
                     System.out.println("nao tinha marca");
                 } else {
                     Veiculo v = veiculoDTO.getVeiculoWithNewModelOnly();
+                    mark.setCriadoEm(LocalDateTime.now());
                     modeloRepository.save(new Modelo(veiculoDTO.getModelo(), veiculoDTO.getModeloId(), mark));
                     var m = modeloRepository.findByFipeId(veiculoDTO.getModeloId());
+                    m.setCriadoEm(LocalDateTime.now());
                     v.setModelo(m);
+                    v.setCriadoEm(LocalDateTime.now());
                     veiculoRepository.save(v);
+
                     System.out.println("ja tinha marca");
                 }
             }
@@ -104,8 +123,27 @@ public class VeiculoService {
             throw new DuplicatedResourceException();
         }
         return veiculoDTO;
+    }
 
 
+    public VeiculoDTO editar(VeiculoDTO veiculoDTO) {
+        Veiculo vehicle = veiculoDTO.getVeiculo();
+        var podeEditar = !veiculoRepository.findByPlaca(vehicle.getPlaca()).isEmpty();
+        if (podeEditar) {
+            vehicle.setAtualizadoEm(LocalDateTime.now());
+            veiculoRepository.save(vehicle);
+            return veiculoDTO;
+        } else throw new ResourceNotFoundException();
+    }
+
+    public void delete(VeiculoDTO veiculoDTO) {
+
+        var podeDeletar = veiculoRepository.findById(veiculoDTO.getId()).isPresent();
+        if (podeDeletar) {
+            veiculoRepository.deleteById(veiculoDTO.getId());
+        } else {
+            throw new ResourceNotFoundException();
+        }
     }
 
 }
