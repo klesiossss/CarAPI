@@ -36,42 +36,42 @@ public class VeiculoController {
 
     @GetMapping
     public ResponseEntity<Page<VeiculoDTO>> obterTodos(@PageableDefault(size = 10, page = 0) Pageable pageable) {
-        var pessoas = veiculoService.obterTodos(pageable);
-        return ResponseEntity.ok(pessoas);
+        var veiculos = veiculoService.obterTodos(pageable);
+        return ResponseEntity.ok(veiculos);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<VeiculoDTO> obterPorId(@PathVariable Long id) {
-        var pessoa = veiculoService.obterPorId(id);
-        return ResponseEntity.ok(pessoa);
+        var veiculo = veiculoService.obterPorId(id);
+        return ResponseEntity.ok(veiculo);
     }
 
 
     @GetMapping("/placa/{placa}")
     public ResponseEntity<VeiculoDTO> obterPorPlaca(@PathVariable String placa) {
-        var pessoa = veiculoService.obterVeiculoPorPlaca(placa);
-        return ResponseEntity.ok(pessoa);
+        var veiculo = veiculoService.obterVeiculoPorPlaca(placa);
+        return ResponseEntity.ok(veiculo);
     }
 
     @GetMapping("/marca/{marca}")
     public ResponseEntity<Page<VeiculoDTO>> obterPorMarca(@PageableDefault(size = 10, page = 0) Pageable pageable,@PathVariable String marca) {
-        var pessoas = veiculoService.obterVeiculosPorMarca(marca,pageable);
-        return ResponseEntity.ok(pessoas);
+        var veiculo = veiculoService.obterVeiculosPorMarca(marca,pageable);
+        return ResponseEntity.ok(veiculo);
     }
 
 
     @PostMapping
     public ResponseEntity<VeiculoDTO> salvar(@RequestBody VeiculoDTO veiculoDTO) {
-        var pessoa = veiculoService.salva(veiculoDTO);
+        var veiculo = veiculoService.salva(veiculoDTO);
         var uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").buildAndExpand().toUri();
-        return ResponseEntity.created(uri).body(pessoa);
+        return ResponseEntity.created(uri).body(veiculo);
     }
 
 
     @PutMapping
-    public ResponseEntity<VeiculoDTO> editar(@RequestBody VeiculoDTO pessoaDTO) {
-        var pessoa = veiculoService.editar(pessoaDTO);
-        return ResponseEntity.ok(pessoa);
+    public ResponseEntity<VeiculoDTO> editar(@RequestBody VeiculoDTO veiculoDTO) {
+        var veiculo = veiculoService.editar(veiculoDTO);
+        return ResponseEntity.ok(veiculo);
     }
 
     @DeleteMapping
