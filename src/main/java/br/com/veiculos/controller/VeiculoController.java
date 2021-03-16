@@ -1,8 +1,6 @@
 package br.com.veiculos.controller;
-import java.util.List;
 
-import javax.swing.text.html.parser.Entity;
-import javax.validation.Valid;
+import java.util.List;
 
 import br.com.veiculos.model.dto.VeiculoDTO;
 import br.com.veiculos.service.VeiculoService;
@@ -71,7 +69,7 @@ public class VeiculoController {
 
 
     @PutMapping
-    public ResponseEntity<VeiculoDTO> editar(@RequestBody @Valid VeiculoDTO pessoaDTO) {
+    public ResponseEntity<VeiculoDTO> editar(@RequestBody VeiculoDTO pessoaDTO) {
         var pessoa = veiculoService.editar(pessoaDTO);
         return ResponseEntity.ok(pessoa);
     }
